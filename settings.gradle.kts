@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "CstvApp"
 include(":app")
- 
+include(":feature:matches")
