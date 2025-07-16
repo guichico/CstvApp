@@ -1,4 +1,4 @@
-package com.codechallenge.cstvapp.ui.theme
+package com.codechallenge.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 
@@ -14,3 +14,8 @@ val White = Color(0xFFFFFFFF)
 
 val BackgroundColor = Color(0xFF161621)
 val CardColor = Color(0xFF272639)
+val MatchTimeColor = Color(0x33FAFAFA)
+val VSColor = Color(0x50FAFAFA)
+val LiveMatchColor = Color(0xFFF42A35)
+val ImagePlaceholderColor = Color(0xFFC4C4C4)
+val PlayerNameColor = Color(0xFF6C6B7E)
