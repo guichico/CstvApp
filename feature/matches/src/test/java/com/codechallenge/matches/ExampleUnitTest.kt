@@ -1,4 +1,4 @@
-package com.codechallenge.cstvapp
+package com.codechallenge.matches
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
