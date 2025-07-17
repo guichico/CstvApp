@@ -23,4 +23,3 @@ rootProject.name = "CstvApp"
 include(":app")
 include(":feature:matches")
 include(":core:designsystem")
-include(":core:model")
