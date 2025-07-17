@@ -33,10 +33,10 @@ private val fakeMatch = Match(
     )
 )
 
-class MatchesListScreenPreviewProvider : PreviewParameterProvider<UiState> {
+class MatchesListScreenPreviewProvider : PreviewParameterProvider<MatchesUiState> {
     override val values = sequenceOf(
-        UiState.Loading,
-        UiState.Success(List(5) { fakeMatch }),
-        UiState.Error(exception = Throwable())
+        MatchesUiState.Loading,
+        MatchesUiState.Success(List(5) { fakeMatch }),
+        MatchesUiState.Error(exception = Throwable())
     )
 }

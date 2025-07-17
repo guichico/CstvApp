@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,6 +26,7 @@ import com.codechallenge.designsystem.theme.ImagePlaceholderColor
 @Composable
 fun CstvAsyncImage(
     modifier: Modifier = Modifier,
+    shape: Shape = CircleShape,
     url: String
 ) {
     var isLoading by remember { mutableStateOf(true) }
@@ -32,14 +34,14 @@ fun CstvAsyncImage(
 
     Box(modifier = modifier) {
         AsyncImage(
-            modifier = Modifier,
+            modifier = modifier,
             model = ImageRequest.Builder(LocalContext.current)
                 .data(url)
                 .crossfade(true)
                 .build(),
             alignment = Alignment.TopCenter,
             contentDescription = null,
-            contentScale = ContentScale.Fit,
+            contentScale = ContentScale.Crop,
             onLoading = {
                 isLoading = true
                 isError = false
@@ -57,7 +59,7 @@ fun CstvAsyncImage(
         if (isLoading || isError) {
             Box(
                 modifier = modifier
-                    .clip(CircleShape)
+                    .clip(shape)
                     .background(ImagePlaceholderColor)
             )
         }

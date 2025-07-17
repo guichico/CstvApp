@@ -14,9 +14,12 @@ fun RectangleAsyncImage(
     modifier: Modifier = Modifier,
     url: String
 ) {
+    val shape = RoundedCornerShape(CstvAppTheme.spacing.small)
+
     CstvAsyncImage(
         modifier = modifier
-            .clip(RoundedCornerShape(CstvAppTheme.spacing.small)),
+            .clip(shape),
+        shape = shape,
         url = url
     )
 }
