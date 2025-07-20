@@ -18,17 +18,20 @@ interface MatchApi {
     suspend fun getRunningMatches(
         @Query("page[size]") pageSize: Int,
         @Query("page[number]") pageNumber: Int,
+        @Query("sort") sort: String,
     ): List<NMatch>
 
     @GET("matches/upcoming")
     suspend fun getUpcomingMatches(
         @Query("page[size]") pageSize: Int,
         @Query("page[number]") pageNumber: Int,
+        @Query("sort") sort: String,
     ): List<NMatch>
 
     @GET("matches/past")
     suspend fun getPastMatches(
         @Query("page[size]") pageSize: Int,
         @Query("page[number]") pageNumber: Int,
+        @Query("sort") sort: String,
     ): List<NMatch>
 }
