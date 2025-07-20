@@ -10,7 +10,7 @@ interface MatchApi {
         @Query("page[size]") pageSize: Int,
         @Query("page[number]") pageNumber: Int,
         @Query("filter[status]") status: String,
-        @Query("range[begin_at]") dates: String,
+        @Query("range[begin_at]") dateRange: String?,
         @Query("sort") sort: String,
     ): List<NMatch>
 
