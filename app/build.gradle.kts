@@ -25,9 +25,11 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -35,11 +37,26 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
+    }
+
+    flavorDimensions += "api"
+
+    productFlavors {
+        create("staging") {
+            isDefault = true
+            dimension = "api"
+        }
+        create("production") {
+            dimension = "api"
+        }
     }
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(project(":feature:matches"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:model"))
