@@ -10,7 +10,7 @@ interface MatchApi {
         @Query("page[size]") pageSize: Int,
         @Query("page[number]") pageNumber: Int,
         @Query("filter[status]") status: String,
-        @Query("range[begin_at]") dates: String,
+        @Query("range[begin_at]") dateRange: String?,
         @Query("sort") sort: String,
     ): List<NMatch>
 
@@ -18,17 +18,20 @@ interface MatchApi {
     suspend fun getRunningMatches(
         @Query("page[size]") pageSize: Int,
         @Query("page[number]") pageNumber: Int,
+        @Query("sort") sort: String,
     ): List<NMatch>
 
     @GET("matches/upcoming")
     suspend fun getUpcomingMatches(
         @Query("page[size]") pageSize: Int,
         @Query("page[number]") pageNumber: Int,
+        @Query("sort") sort: String,
     ): List<NMatch>
 
     @GET("matches/past")
     suspend fun getPastMatches(
         @Query("page[size]") pageSize: Int,
         @Query("page[number]") pageNumber: Int,
+        @Query("sort") sort: String,
     ): List<NMatch>
 }
