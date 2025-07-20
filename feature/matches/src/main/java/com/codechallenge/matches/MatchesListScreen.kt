@@ -41,6 +41,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.codechallenge.designsystem.components.CirclePlaceholderAsyncImage
 import com.codechallenge.designsystem.theme.CardColor
 import com.codechallenge.designsystem.theme.CstvAppTheme
 import com.codechallenge.designsystem.theme.MatchTimeColor

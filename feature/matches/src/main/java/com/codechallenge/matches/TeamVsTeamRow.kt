@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.codechallenge.designsystem.components.CirclePlaceholderAsyncImage
 import com.codechallenge.designsystem.theme.CstvAppTheme
 import com.codechallenge.designsystem.theme.VSColor
 import com.codechallenge.model.Team
@@ -46,11 +47,6 @@ private fun TeamColumn(
             )
         }
     }
-}
-
-@Composable
-fun CirclePlaceholderAsyncImage(modifier: Modifier, url: String?) {
-    TODO("Not yet implemented")
 }
 
 @Composable
