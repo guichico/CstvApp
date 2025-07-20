@@ -20,7 +20,10 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
 
         // Set to a fixed value because there is no dark and light mode specification
-        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT)
+        )
 
         setContent {
             CstvAppTheme {

@@ -2,44 +2,47 @@ package com.codechallenge.matches
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.codechallenge.model.League
-import com.codechallenge.model.Match
-import com.codechallenge.model.Serie
-import com.codechallenge.model.Team
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import androidx.paging.map
+import com.codechallenge.common.string.StringProvider
+import com.codechallenge.matches.model.toUIModel
+import com.codechallenge.repository.matches.MatchesPagingSource
+import com.codechallenge.repository.matches.MatchesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class MatchesListViewModel @Inject constructor(
-
+    matchesRepository: MatchesRepository,
+    stringProvider: StringProvider
 ) : ViewModel() {
 
-    private val fakeMatch = Match(
-        id = 0,
-        teams = listOf(
-            Team(id = 0, name = "Team 1", logoUrl = "https://cdn.pandascore.co/images/team/image/3213/220px_team_liquidlogo_square.png"),
-            Team(id = 0, name = "Team 2", logoUrl = "https://cdn.pandascore.co/images/team/image/3240/208px_mouz_2021_allmode.png")
-        ),
-        players = emptyList(),
-        date = "Hoje, 21:00",
-        league = League(
-            id = 0,
-            name = "League",
-            imgUrl = ""
-        ),
-        serie = Serie(
-            id = 0,
-            name = "serie"
-        )
-    )
-
-    val matchesUIState = MutableStateFlow<MatchesUiState>(MatchesUiState.Loading)
-
-    init {
-        viewModelScope.launch {
-            matchesUIState.value = MatchesUiState.Success(List(5) { fakeMatch })
-        }
+    companion object {
+        const val PAGE_SIZE = 10
+        const val UPCOMING_DAYS = 2L
     }
+
+    val matchesPager = Pager(
+        config = PagingConfig(
+            initialLoadSize = PAGE_SIZE,
+            pageSize = PAGE_SIZE,
+        )
+    ) {
+        MatchesPagingSource(
+            matchesRepository = matchesRepository,
+            latestDate = LocalDate.now().plusDays(UPCOMING_DAYS).toString()
+        )
+    }
+        .flow
+        .map { pagingData ->
+            pagingData.map { match -> match.toUIModel(stringProvider) }
+        }
+        .flowOn(Dispatchers.Default)
+        .cachedIn(viewModelScope)
 }
