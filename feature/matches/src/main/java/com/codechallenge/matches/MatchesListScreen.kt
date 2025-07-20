@@ -43,7 +43,7 @@ import com.codechallenge.model.Match
 @Composable
 fun MatchesListScreen(
     matchesListViewModel: MatchesListViewModel = hiltViewModel(),
-    onMatchClick: () -> Unit
+    onMatchClick: (Match) -> Unit
 ) {
     val matchesUIState = matchesListViewModel.matchesUIState.collectAsState()
 
@@ -56,8 +56,8 @@ fun MatchesListScreen(
 
 @Composable
 fun MatchesListScreenContent(
-    matchesUIState: State<UiState>,
-    onMatchClick: () -> Unit,
+    matchesUIState: State<MatchesUiState>,
+    onMatchClick: (Match) -> Unit,
     onRetryClick: () -> Unit
 ) {
     Column(
@@ -78,32 +78,29 @@ fun MatchesListScreenContent(
             onMatchClick = onMatchClick,
             onRetryClick = onRetryClick
         )
-
     }
 }
 
 @Composable
 private fun MatchesUIStateContent(
-    matchesUIState: State<UiState>,
-    onMatchClick: () -> Unit,
+    matchesUIState: State<MatchesUiState>,
+    onMatchClick: (Match) -> Unit,
     onRetryClick: () -> Unit
 ) {
     when (val matchesUIState = matchesUIState.value) {
-        is UiState.Loading -> {
+        is MatchesUiState.Loading -> {
             LoadingView()
         }
 
-        is UiState.Success<*> -> {
-            val matches = (matchesUIState.data as List<*>).filterIsInstance<Match>()
-
+        is MatchesUiState.Success -> {
             Spacer(modifier = Modifier.height(CstvAppTheme.spacing.extraExtraLarge))
             MatchesList(
-                matches = matches,
+                matches = matchesUIState.matches,
                 onMatchClick = onMatchClick
             )
         }
 
-        is UiState.Error -> {
+        is MatchesUiState.Error -> {
             ErrorView(
                 onRetryClick = onRetryClick
             )
@@ -114,7 +111,7 @@ private fun MatchesUIStateContent(
 @Composable
 private fun MatchesList(
     matches: List<Match>,
-    onMatchClick: () -> Unit
+    onMatchClick: (Match) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -133,7 +130,7 @@ private fun MatchesList(
 @Composable
 private fun MatchCard(
     match: Match,
-    onMatchClick: () -> Unit
+    onMatchClick: (Match) -> Unit
 ) {
     val shape = RoundedCornerShape(CstvAppTheme.spacing.large)
 
@@ -145,7 +142,7 @@ private fun MatchCard(
                 color = CardColor,
                 shape = shape
             )
-            .clickable(onClick = onMatchClick)
+            .clickable(onClick = { onMatchClick(match) })
     ) {
         Column(
             modifier = Modifier
@@ -228,7 +225,7 @@ private fun MatchLeague(
 @Preview
 @Composable
 private fun MatchesListScreenPreview(
-    @PreviewParameter(MatchesListScreenPreviewProvider::class) matchesUIState: UiState
+    @PreviewParameter(MatchesListScreenPreviewProvider::class) matchesUIState: MatchesUiState
 ) {
     CstvAppTheme {
         MatchesListScreenContent(

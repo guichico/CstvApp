@@ -18,10 +18,11 @@ import com.codechallenge.designsystem.theme.CstvAppTheme
 
 @Composable
 fun ErrorView(
+    modifier: Modifier = Modifier,
     onRetryClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
