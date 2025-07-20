@@ -5,7 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.codechallenge.matches.CustomNavType
-import com.codechallenge.model.Match
+import com.codechallenge.matches.model.MatchUI
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
@@ -15,9 +15,9 @@ data class MatchDetailsScreenRoute(val matchDetailsScreenParameters: MatchDetail
 
 @Parcelize
 @Serializable
-data class MatchDetailsScreenParameters(val match: Match) : Parcelable
+data class MatchDetailsScreenParameters(val match: MatchUI) : Parcelable
 
-fun NavController.navigateToMatchDetails(match: Match) {
+fun NavController.navigateToMatchDetails(match: MatchUI) {
     navigate(route = MatchDetailsScreenRoute(MatchDetailsScreenParameters(match)))
 }
 

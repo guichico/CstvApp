@@ -29,6 +29,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -41,7 +43,7 @@ import com.codechallenge.designsystem.theme.PlayerNameColor
 import com.codechallenge.designsystem.views.ErrorView
 import com.codechallenge.designsystem.views.LoadingView
 import com.codechallenge.matches.TeamVsTeamRow
-import com.codechallenge.model.Match
+import com.codechallenge.matches.model.MatchUI
 import com.codechallenge.model.Player
 
 const val PLAYER_PROFILE_SIZE = 48
@@ -51,18 +53,21 @@ fun MatchDetailsScreen(
     matchDetailsViewModel: MatchDetailsViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
 ) {
-    val matchUIState = matchDetailsViewModel.matchUIState.collectAsState()
+    val match = matchDetailsViewModel.matchParam
+    val playersUIState = matchDetailsViewModel.playersUIState.collectAsState()
 
     MatchDetailsScreenContent(
-        matchUIState = matchUIState,
+        match = match,
+        playersUIState = playersUIState,
         onBackClick = onBackClick,
         onRetryClick = { }
     )
 }
 
 @Composable
-fun MatchDetailsScreenContent(
-    matchUIState: State<MatchUiState>,
+private fun MatchDetailsScreenContent(
+    match: MatchUI,
+    playersUIState: State<PlayersUiState>,
     onBackClick: () -> Unit,
     onRetryClick: () -> Unit
 ) {
@@ -70,45 +75,34 @@ fun MatchDetailsScreenContent(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val matchUIState = matchUIState.value
-
-        val match = when (matchUIState) {
-            is MatchUiState.Loading -> matchUIState.initialMatch
-            is MatchUiState.Success -> matchUIState.match
-            else -> null
-        }
-
-        match?.let {
-            Header(
-                title = "${match.league.name}, ${match.serie.name}",
-                onBackClick = onBackClick
-            )
-            Spacer(modifier = Modifier.height(CstvAppTheme.spacing.extraExtraLarge))
-            MatchInfo(
-                match = match
-            )
-        }
-
+        Header(
+            title = match.leagueAndSerieLabel,
+            onBackClick = onBackClick
+        )
+        Spacer(modifier = Modifier.height(CstvAppTheme.spacing.extraExtraLarge))
+        MatchInfo(
+            match = match
+        )
         Spacer(modifier = Modifier.height(CstvAppTheme.spacing.extraLarge))
 
+        val playersUIState = playersUIState.value
+
         AnimatedContent(
-            matchUIState
-        ) { matchUIState ->
-            when (matchUIState) {
-                is MatchUiState.Loading -> {
+            playersUIState
+        ) { playersUIState ->
+            when (playersUIState) {
+                is PlayersUiState.Loading -> {
                     LoadingView()
                 }
 
-                is MatchUiState.Success -> {
-                    val teamsPlayers = match?.players?.chunked(5) ?: emptyList()
-
+                is PlayersUiState.Success -> {
                     PlayersView(
-                        teamAPlayers = teamsPlayers[0],
-                        teamBPlayers = teamsPlayers[1]
+                        teamAPlayers = playersUIState.teamAPlayers,
+                        teamBPlayers = playersUIState.teamBPlayers
                     )
                 }
 
-                is MatchUiState.Error -> {
+                is PlayersUiState.Error -> {
                     ErrorView(
                         modifier = Modifier
                             .padding(horizontal = CstvAppTheme.spacing.extraExtraLarge),
@@ -122,7 +116,7 @@ fun MatchDetailsScreenContent(
 
 @Composable
 private fun Header(
-    title: String,
+    title: String?,
     onBackClick: () -> Unit,
 ) {
     Box(
@@ -137,8 +131,11 @@ private fun Header(
         }
         Text(
             modifier = Modifier
-                .align(Alignment.Center),
-            text = title,
+                .align(Alignment.Center)
+                .padding(horizontal = 52.dp),
+            text = title ?: "",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = CstvAppTheme.typography.robotoTitleMedium
         )
     }
@@ -146,17 +143,17 @@ private fun Header(
 
 @Composable
 private fun ColumnScope.MatchInfo(
-    match: Match
+    match: MatchUI
 ) {
     TeamVsTeamRow(
-        homeTeam = match.teams.first(),
-        visitingTeam = match.teams[1],
+        homeTeam = match.teamA,
+        visitingTeam = match.teamB,
     )
     Spacer(modifier = Modifier.height(CstvAppTheme.spacing.extraLarge))
     Text(
         modifier = Modifier
             .align(Alignment.CenterHorizontally),
-        text = match.date,
+        text = match.dateFormatted ?: "",
         style = CstvAppTheme.typography.robotoBold2
     )
 }
@@ -218,7 +215,7 @@ private fun PlayersList(
 
 @Composable
 private fun PlayerProfileImage(
-    playerProfileUrl: String
+    playerProfileUrl: String?
 ) {
     Row(
         modifier = Modifier
@@ -228,6 +225,7 @@ private fun PlayerProfileImage(
         RectangleAsyncImage(
             modifier = Modifier
                 .size(PLAYER_PROFILE_SIZE.dp),
+            contentScale = ContentScale.Crop,
             url = playerProfileUrl
         )
         Spacer(modifier = Modifier.width(CstvAppTheme.spacing.medium))
@@ -237,8 +235,8 @@ private fun PlayerProfileImage(
 @Composable
 private fun RowScope.PlayerInfoColumn(
     modifier: Modifier = Modifier,
-    nickName: String,
-    name: String,
+    nickName: String?,
+    name: String?,
     isLtr: Boolean
 ) {
     Column(
@@ -249,12 +247,16 @@ private fun RowScope.PlayerInfoColumn(
     ) {
         Text(
             modifier = Modifier,
-            text = nickName,
+            text = nickName ?: "",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = CstvAppTheme.typography.robotoBold1
         )
         Text(
             modifier = Modifier,
-            text = name,
+            text = name ?: "",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = CstvAppTheme.typography.robotoRegular3,
             color = PlayerNameColor
         )
@@ -337,11 +339,12 @@ private fun PlayerCard(
 @Preview
 @Composable
 private fun MatchDetailsScreenPreview(
-    @PreviewParameter(MatchDetailsScreenPreviewProvider::class) matchUIState: MatchUiState
+    @PreviewParameter(MatchDetailsScreenPreviewProvider::class) matchDetailsScreenData: MatchDetailsScreenData
 ) {
     CstvAppTheme {
         MatchDetailsScreenContent(
-            matchUIState = remember { mutableStateOf(matchUIState) },
+            match = matchDetailsScreenData.match,
+            playersUIState = remember { mutableStateOf(matchDetailsScreenData.playersUiState) },
             onBackClick = {},
             onRetryClick = {}
         )

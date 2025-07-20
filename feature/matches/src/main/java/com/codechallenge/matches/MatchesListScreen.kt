@@ -15,49 +15,59 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.codechallenge.designsystem.components.CstvAsyncImage
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.codechallenge.designsystem.components.CirclePlaceholderAsyncImage
 import com.codechallenge.designsystem.theme.CardColor
 import com.codechallenge.designsystem.theme.CstvAppTheme
 import com.codechallenge.designsystem.theme.MatchTimeColor
 import com.codechallenge.designsystem.views.ErrorView
 import com.codechallenge.designsystem.views.LoadingView
-import com.codechallenge.model.Match
+import com.codechallenge.matches.model.MatchUI
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun MatchesListScreen(
     matchesListViewModel: MatchesListViewModel = hiltViewModel(),
-    onMatchClick: (Match) -> Unit
+    onMatchClick: (MatchUI) -> Unit
 ) {
-    val matchesUIState = matchesListViewModel.matchesUIState.collectAsState()
+    val matchesPager = matchesListViewModel.matchesPager.collectAsLazyPagingItems()
 
     MatchesListScreenContent(
-        matchesUIState = matchesUIState,
+        matchesPager = matchesPager,
         onMatchClick = onMatchClick,
         onRetryClick = {}
     )
 }
 
 @Composable
-fun MatchesListScreenContent(
-    matchesUIState: State<MatchesUiState>,
-    onMatchClick: (Match) -> Unit,
+private fun MatchesListScreenContent(
+    matchesPager: LazyPagingItems<MatchUI>,
+    onMatchClick: (MatchUI) -> Unit,
     onRetryClick: () -> Unit
 ) {
     Column(
@@ -74,7 +84,7 @@ fun MatchesListScreenContent(
             style = CstvAppTheme.typography.robotoTitleLarge
         )
         MatchesUIStateContent(
-            matchesUIState = matchesUIState,
+            matchesPager = matchesPager,
             onMatchClick = onMatchClick,
             onRetryClick = onRetryClick
         )
@@ -83,54 +93,84 @@ fun MatchesListScreenContent(
 
 @Composable
 private fun MatchesUIStateContent(
-    matchesUIState: State<MatchesUiState>,
-    onMatchClick: (Match) -> Unit,
+    matchesPager: LazyPagingItems<MatchUI>,
+    onMatchClick: (MatchUI) -> Unit,
     onRetryClick: () -> Unit
 ) {
-    when (val matchesUIState = matchesUIState.value) {
-        is MatchesUiState.Loading -> {
+    when {
+        matchesPager.loadState.refresh == LoadState.Loading ||
+                matchesPager.loadState.prepend == LoadState.Loading -> {
             LoadingView()
         }
 
-        is MatchesUiState.Success -> {
-            Spacer(modifier = Modifier.height(CstvAppTheme.spacing.extraExtraLarge))
-            MatchesList(
-                matches = matchesUIState.matches,
-                onMatchClick = onMatchClick
-            )
-        }
-
-        is MatchesUiState.Error -> {
+        matchesPager.loadState.refresh is LoadState.Error -> {
             ErrorView(
                 onRetryClick = onRetryClick
             )
         }
+
+        else -> {
+            Spacer(modifier = Modifier.height(CstvAppTheme.spacing.extraExtraLarge))
+            MatchesList(
+                matchesPager = matchesPager,
+                onMatchClick = onMatchClick
+            )
+        }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MatchesList(
-    matches: List<Match>,
-    onMatchClick: (Match) -> Unit
+    matchesPager: LazyPagingItems<MatchUI>,
+    onMatchClick: (MatchUI) -> Unit
 ) {
-    LazyColumn(
+    val isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullToRefreshState()
+
+    PullToRefreshBox(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize(),
+        isRefreshing = isRefreshing,
+        onRefresh = { matchesPager.refresh() },
+        state = pullRefreshState
     ) {
-        items(matches) { match ->
-            MatchCard(
-                match = match,
-                onMatchClick = onMatchClick
-            )
-            Spacer(modifier = Modifier.height(CstvAppTheme.spacing.extraExtraLarge))
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            items(matchesPager.itemCount) { index ->
+                matchesPager[index]?.let { match ->
+                    MatchCard(
+                        match = match,
+                        onMatchClick = onMatchClick
+                    )
+                    Spacer(modifier = Modifier.height(CstvAppTheme.spacing.extraExtraLarge))
+                }
+            }
+            if (matchesPager.loadState.append == LoadState.Loading) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                        )
+                        Spacer(modifier = Modifier.height(CstvAppTheme.spacing.extraExtraLarge))
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun MatchCard(
-    match: Match,
-    onMatchClick: (Match) -> Unit
+private fun LazyItemScope.MatchCard(
+    match: MatchUI,
+    onMatchClick: (MatchUI) -> Unit
 ) {
     val shape = RoundedCornerShape(CstvAppTheme.spacing.large)
 
@@ -143,27 +183,29 @@ private fun MatchCard(
                 shape = shape
             )
             .clickable(onClick = { onMatchClick(match) })
+            .animateItem()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
             MatchTime(
-                date = match.date
+                backgroundColor = Color(match.dateBgColor.value),
+                date = match.dateFormatted ?: ""
             )
 
             TeamVsTeamRow(
                 modifier = Modifier
                     .padding(vertical = CstvAppTheme.spacing.extraLarge),
-                homeTeam = match.teams.first(),
-                visitingTeam = match.teams[1]
+                homeTeam = match.teamA,
+                visitingTeam = match.teamB
             )
 
             HorizontalDivider(thickness = 1.dp, color = MatchTimeColor)
 
             MatchLeague(
-                title = "${match.league.name}, ${match.serie.name}",
-                leagueImgUrl = match.league.imgUrl
+                title = match.leagueAndSerieLabel,
+                leagueImgUrl = match.league?.imgUrl ?: ""
             )
         }
     }
@@ -171,13 +213,14 @@ private fun MatchCard(
 
 @Composable
 private fun ColumnScope.MatchTime(
+    backgroundColor: Color,
     date: String
 ) {
     Box(
         modifier = Modifier
             .wrapContentSize()
             .background(
-                color = MatchTimeColor,
+                color = backgroundColor,
                 shape = RoundedCornerShape(
                     topEnd = CstvAppTheme.spacing.large,
                     bottomStart = CstvAppTheme.spacing.large
@@ -196,8 +239,8 @@ private fun ColumnScope.MatchTime(
 
 @Composable
 private fun MatchLeague(
-    title: String,
-    leagueImgUrl: String,
+    title: String?,
+    leagueImgUrl: String?,
 ) {
     Row(
         modifier = Modifier
@@ -207,7 +250,7 @@ private fun MatchLeague(
                 horizontal = CstvAppTheme.spacing.large
             )
     ) {
-        CstvAsyncImage(
+        CirclePlaceholderAsyncImage(
             modifier = Modifier
                 .size(16.dp),
             url = leagueImgUrl
@@ -216,7 +259,9 @@ private fun MatchLeague(
         Text(
             modifier = Modifier
                 .align(Alignment.CenterVertically),
-            text = title,
+            text = title ?: "",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = CstvAppTheme.typography.robotoRegular1
         )
     }
@@ -225,12 +270,16 @@ private fun MatchLeague(
 @Preview
 @Composable
 private fun MatchesListScreenPreview(
-    @PreviewParameter(MatchesListScreenPreviewProvider::class) matchesUIState: MatchesUiState
+    @PreviewParameter(MatchesListScreenPreviewProvider::class) fakeMatchUI: MatchUI
 ) {
+    val pagingData = PagingData.from(List(5) { fakeMatchUI })
+    val fakeDataFlow = remember { MutableStateFlow(pagingData) }
+    val lazyPagingItems = fakeDataFlow.collectAsLazyPagingItems()
+
     CstvAppTheme {
         MatchesListScreenContent(
-            matchesUIState = remember { mutableStateOf(matchesUIState) },
-            onMatchClick = { },
+            matchesPager = lazyPagingItems,
+            onMatchClick = {},
             onRetryClick = {}
         )
     }

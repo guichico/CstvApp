@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="matches_title">Matches</string>
+    <string name="live">Live</string>
+    <string name="today">Today</string>
 </resources>
