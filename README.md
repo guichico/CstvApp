@@ -21,12 +21,19 @@ I left the pull requests created but merged all the code into main to make it ea
 Libraries:
 <br />
 UI - Compose
+<br />
 Pagination - Paging 3
+<br />
 Compose navigation - Type-safe navigation
+<br />
 Dependency injection - Hilt
+<br />
 Network - Retrofit and Okhttp
+<br />
 Image - loading and caching - Coil
+<br />
 Tests - Junit, Mockito e Mockk
+<br />
 <br />
 You can run the app by compiling the main branch or by installing the not signed following apk:
 https://drive.google.com/file/d/15A5GSQWuNXkfVXfYbY7oufCPhARvPe4W/view?usp=sharing
