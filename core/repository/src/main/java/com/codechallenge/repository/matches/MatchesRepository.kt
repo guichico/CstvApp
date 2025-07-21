@@ -1,10 +1,17 @@
 package com.codechallenge.repository.matches
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.codechallenge.model.Match
 import com.codechallenge.network.match.MatchApi
 import com.codechallenge.network.model.toModel
+import kotlinx.coroutines.flow.Flow
 
 interface MatchesRepository {
+
+    fun getMatches(pageSize: Int, latestDate: String): Flow<PagingData<Match>>
+
     suspend fun getRunningMatches(pageSize: Int, pageNumber: Int, latestDate: String): List<Match>
     suspend fun getUpcomingMatches(pageSize: Int, pageNumber: Int, latestDate: String): List<Match>
     suspend fun getPastMatches(pageSize: Int, pageNumber: Int, latestDate: String): List<Match>
@@ -25,6 +32,20 @@ class MatchesRepositoryImpl(
         private const val SORTING_ASCENDING = "begin_at"
         private const val SORTING_DESCENDING = "-begin_at"
     }
+
+    override fun getMatches(pageSize: Int, latestDate: String) =
+        Pager(
+            config = PagingConfig(
+                initialLoadSize = pageSize,
+                pageSize = pageSize,
+            )
+        ) {
+            MatchesPagingSource(
+                matchesRepository = this,
+                latestDate = latestDate
+            )
+        }
+            .flow
 
     private suspend fun getMatches(
         pageSize: Int,

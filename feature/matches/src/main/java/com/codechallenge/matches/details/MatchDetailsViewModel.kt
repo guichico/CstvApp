@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.codechallenge.domain.GetPlayersUseCase
 import com.codechallenge.matches.CustomNavType
-import com.codechallenge.repository.players.PlayersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,7 +20,7 @@ import kotlin.reflect.typeOf
 @HiltViewModel
 class MatchDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    playerRepository: PlayersRepository
+    getPlayers: GetPlayersUseCase,
 ) : ViewModel() {
 
     val matchParam = savedStateHandle.toRoute<MatchDetailsScreenRoute>(
@@ -35,8 +35,8 @@ class MatchDetailsViewModel @Inject constructor(
     val playersUIState: StateFlow<PlayersUiState> =
         combine(
             // Must have two teams
-            playerRepository.getPlayers(matchParam.teamA!!.id),
-            playerRepository.getPlayers(matchParam.teamB!!.id)
+            getPlayers(matchParam.teamA!!.id),
+            getPlayers(matchParam.teamB!!.id)
         ) { teamA, teamB ->
             PlayersUiState.Success(
                 teamAPlayers = teamA,
