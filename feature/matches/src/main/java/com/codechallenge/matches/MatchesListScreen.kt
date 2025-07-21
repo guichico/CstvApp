@@ -22,11 +22,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,7 +63,7 @@ fun MatchesListScreen(
     MatchesListScreenContent(
         matchesPager = matchesPager,
         onMatchClick = onMatchClick,
-        onRetryClick = {}
+        onRetryClick = { matchesPager.refresh() },
     )
 }
 
@@ -68,7 +71,7 @@ fun MatchesListScreen(
 private fun MatchesListScreenContent(
     matchesPager: LazyPagingItems<MatchUI>,
     onMatchClick: (MatchUI) -> Unit,
-    onRetryClick: () -> Unit
+    onRetryClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -86,20 +89,28 @@ private fun MatchesListScreenContent(
         MatchesUIStateContent(
             matchesPager = matchesPager,
             onMatchClick = onMatchClick,
-            onRetryClick = onRetryClick
+            onRetryClick = onRetryClick,
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MatchesUIStateContent(
     matchesPager: LazyPagingItems<MatchUI>,
     onMatchClick: (MatchUI) -> Unit,
-    onRetryClick: () -> Unit
+    onRetryClick: () -> Unit,
 ) {
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullToRefreshState = rememberPullToRefreshState()
+
+    val isLoading = matchesPager.loadState.refresh is LoadState.Loading
+    LaunchedEffect(isLoading) {
+        if (!isLoading) isRefreshing = false
+    }
+
     when {
-        matchesPager.loadState.refresh == LoadState.Loading ||
-                matchesPager.loadState.prepend == LoadState.Loading -> {
+        matchesPager.loadState.refresh is LoadState.Loading && !isRefreshing -> {
             LoadingView()
         }
 
@@ -113,7 +124,13 @@ private fun MatchesUIStateContent(
             Spacer(modifier = Modifier.height(CstvAppTheme.spacing.extraExtraLarge))
             MatchesList(
                 matchesPager = matchesPager,
-                onMatchClick = onMatchClick
+                onMatchClick = onMatchClick,
+                isRefreshing = isRefreshing,
+                onRefresh = {
+                    isRefreshing = true
+                    matchesPager.refresh()
+                },
+                pullToRefreshState = pullToRefreshState
             )
         }
     }
@@ -123,17 +140,17 @@ private fun MatchesUIStateContent(
 @Composable
 private fun MatchesList(
     matchesPager: LazyPagingItems<MatchUI>,
-    onMatchClick: (MatchUI) -> Unit
+    onMatchClick: (MatchUI) -> Unit,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
+    pullToRefreshState: PullToRefreshState,
 ) {
-    val isRefreshing by remember { mutableStateOf(false) }
-    val pullRefreshState = rememberPullToRefreshState()
-
     PullToRefreshBox(
         modifier = Modifier
             .fillMaxSize(),
         isRefreshing = isRefreshing,
-        onRefresh = { matchesPager.refresh() },
-        state = pullRefreshState
+        onRefresh = onRefresh,
+        state = pullToRefreshState
     ) {
         LazyColumn(
             modifier = Modifier
@@ -280,7 +297,7 @@ private fun MatchesListScreenPreview(
         MatchesListScreenContent(
             matchesPager = lazyPagingItems,
             onMatchClick = {},
-            onRetryClick = {}
+            onRetryClick = {},
         )
     }
 }

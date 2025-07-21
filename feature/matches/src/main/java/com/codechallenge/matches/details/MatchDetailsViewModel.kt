@@ -41,10 +41,10 @@ class MatchDetailsViewModel @Inject constructor(
             PlayersUiState.Success(
                 teamAPlayers = teamA,
                 teamBPlayers = teamB
-            )
+            ) as PlayersUiState
         }
             .catch { e ->
-                PlayersUiState.Error(e)
+                emit(PlayersUiState.Error(e) as PlayersUiState)
             }
             .flowOn(Dispatchers.IO)
             .stateIn(viewModelScope, SharingStarted.Lazily, PlayersUiState.Loading)

@@ -38,7 +38,7 @@ fun ErrorView(
         ) {
             Text(
                 text = stringResource(R.string.retry_btn),
-                style = CstvAppTheme.typography.robotoRegular3
+                style = CstvAppTheme.typography.robotoBold1
             )
         }
     }

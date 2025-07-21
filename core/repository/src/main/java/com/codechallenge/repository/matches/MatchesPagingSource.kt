@@ -49,28 +49,30 @@ class MatchesPagingSource(
             /* TODO: Spec doubt - If we can assume the running matches list size are never bigger than 10
              *  otherwise it will have a problem with pagination so then the next source request needs to be executed after the first one
              */
+            var matchesSize: Int
             val matches = if (currentMatchesType.runConcurrentWithNext) {
-                val matches2 = async(start = CoroutineStart.LAZY) {
+                val matches2Deferred = async(start = CoroutineStart.LAZY) {
                     currentMatchesType = currentMatchesType.nextSource
                     currentMatchesType.loadMatches(params.loadSize, currentPage, latestDate)
                 }
-                val matches1 = async(start = CoroutineStart.LAZY) {
+                val matches1Deferred = async(start = CoroutineStart.LAZY) {
                     val match1CurrentMatchesType = currentMatchesType
-                    matches2.start()
+                    matches2Deferred.start()
                     match1CurrentMatchesType.loadMatches(params.loadSize, currentPage, latestDate)
                 }
 
-                matches1.start()
+                matches1Deferred.start()
 
-                matches1.await() + matches2.await()
+                matches1Deferred.await() + matches2Deferred.await().also { matchesSize = it.size }
             } else {
                 currentMatchesType.loadMatches(params.loadSize, currentPage, latestDate)
+                    .also { matchesSize = it.size }
             }
 
-            val isEndOfTheList = matches.size < params.loadSize
+            val isEndOfTheList = matchesSize < params.loadSize
 
             val nextKey = when {
-                currentMatchesType.isLastSource && matches.isEmpty() -> null
+                currentMatchesType.isLastSource && isEndOfTheList -> null
                 isEndOfTheList -> STARTING_PAGE
                 else -> currentPage + 1
             }
