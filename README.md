@@ -8,7 +8,9 @@ Architecture - Clean Architecture with MVVM
 
 The app module basically contains Application and Activity and the structure to receive more feature modules
 
+
 I left the pull requests created but merged all the code into main to make it easier to view.
+
 
 Libraries:
 
@@ -27,3 +29,4 @@ Tests - Junit, Mockito e Mockk
 
 
 You can run the app by compiling the main branch or by installing the following apk:
+https://drive.google.com/file/d/15A5GSQWuNXkfVXfYbY7oufCPhARvPe4W/view?usp=sharing
