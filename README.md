@@ -17,23 +17,16 @@ You can find tests of the two ViewModels in feature/matches/test
 <br />
 I left the pull requests created but merged all the code into main to make it easier to view.
 <br />
-
+<br />
 Libraries:
-
+<br />
 UI - Compose
-
 Pagination - Paging 3
-
 Compose navigation - Type-safe navigation
-
 Dependency injection - Hilt
-
 Network - Retrofit and Okhttp
-
 Image - loading and caching - Coil
-
 Tests - Junit, Mockito e Mockk
-
 <br />
 You can run the app by compiling the main branch or by installing the not signed following apk:
 https://drive.google.com/file/d/15A5GSQWuNXkfVXfYbY7oufCPhARvPe4W/view?usp=sharing
