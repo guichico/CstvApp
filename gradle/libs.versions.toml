@@ -6,18 +6,16 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinxCoroutinesTest = "1.10.2"
-lifecycleRuntimeKtx = "2.9.1"
+lifecycleRuntimeKtx = "2.9.2"
 activityCompose = "1.10.1"
-composeBom = "2025.06.01"
+composeBom = "2025.07.00"
 coreSplashscreen = "1.0.1"
 ksp = "2.2.0-2.0.2"
-hiltCompiler = "2.56.2"
-hiltAndroidCompiler = "2.56.2"
-hiltAndroid = "2.56.2"
+hiltAndroid = "2.57"
 hiltNavigationCompose = "1.2.0"
 mockitoKotlin = "6.0.0"
 mockk = "1.14.5"
-navigationCompose = "2.9.1"
+navigationCompose = "2.9.2"
 appcompat = "1.7.1"
 coil = "3.2.0"
 kotlinxSerializationJson = "1.9.0"
@@ -54,8 +52,8 @@ androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-com
 compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "composeRuntime" }
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "composeUi" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltCompiler" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltAndroid" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }

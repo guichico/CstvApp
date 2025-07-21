@@ -22,10 +22,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
@@ -54,7 +52,7 @@ fun MatchDetailsScreen(
     onBackClick: () -> Unit,
 ) {
     val match = matchDetailsViewModel.matchParam
-    val playersUIState = matchDetailsViewModel.playersUIState.collectAsState()
+    val playersUIState by matchDetailsViewModel.playersUIState.collectAsState()
 
     MatchDetailsScreenContent(
         match = match,
@@ -67,7 +65,7 @@ fun MatchDetailsScreen(
 @Composable
 private fun MatchDetailsScreenContent(
     match: MatchUI,
-    playersUIState: State<PlayersUiState>,
+    playersUIState: PlayersUiState,
     onBackClick: () -> Unit,
     onRetryClick: () -> Unit
 ) {
@@ -84,8 +82,6 @@ private fun MatchDetailsScreenContent(
             match = match
         )
         Spacer(modifier = Modifier.height(CstvAppTheme.spacing.extraLarge))
-
-        val playersUIState = playersUIState.value
 
         AnimatedContent(
             playersUIState
@@ -344,7 +340,7 @@ private fun MatchDetailsScreenPreview(
     CstvAppTheme {
         MatchDetailsScreenContent(
             match = matchDetailsScreenData.match,
-            playersUIState = remember { mutableStateOf(matchDetailsScreenData.playersUiState) },
+            playersUIState = matchDetailsScreenData.playersUiState,
             onBackClick = {},
             onRetryClick = {}
         )

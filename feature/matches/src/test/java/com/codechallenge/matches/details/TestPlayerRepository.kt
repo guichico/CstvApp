@@ -1,7 +1,5 @@
 package com.codechallenge.matches.details
 
-import com.codechallenge.matches.fakePlayers1
-import com.codechallenge.matches.fakePlayers2
 import com.codechallenge.repository.players.PlayersRepository
 import kotlinx.coroutines.flow.flow
 

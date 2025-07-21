@@ -1,14 +1,9 @@
 package com.codechallenge.matches.details
 
-import androidx.navigation.toRoute
-import com.codechallenge.matches.fakePlayers1
-import com.codechallenge.matches.fakePlayers2
 import com.codechallenge.matches.model.MatchUI
 import com.codechallenge.model.Team
 import com.codechallenge.test.AbstractTest
 import com.codechallenge.test.SavedStateHandleMock
-import io.mockk.every
-import io.mockk.mockkStatic
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first

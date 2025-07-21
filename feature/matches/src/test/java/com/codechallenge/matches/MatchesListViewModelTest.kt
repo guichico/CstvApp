@@ -48,7 +48,7 @@ class MatchesListViewModelTest : AbstractTest() {
     }
 
     @Test
-    fun testMatches() = runTest {
+    fun testMatchesHalfList() = runTest {
         whenever(stringProvider.getString(R.string.live)).thenReturn("Live")
         whenever(stringProvider.getString(R.string.today)).thenReturn("Today")
 
@@ -75,7 +75,7 @@ class MatchesListViewModelTest : AbstractTest() {
     }
 
     @Test
-    fun testMatches2() = runTest {
+    fun testMatchesFullList() = runTest {
         whenever(stringProvider.getString(R.string.live)).thenReturn("Live")
         whenever(stringProvider.getString(R.string.today)).thenReturn("Today")
 

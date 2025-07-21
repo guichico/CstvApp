@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -24,8 +27,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    tasks.withType<KotlinJvmCompile>().configureEach {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+            freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
+        }
     }
 }
 
@@ -34,7 +40,14 @@ dependencies {
     implementation(libs.androidx.appcompat)
 
     implementation(libs.mockito.kotlin)
-    implementation(libs.mockk)
+    implementation(libs.mockk) {
+        exclude(group = "org.junit.jupiter", module = "junit-jupter-params")
+        exclude(group = "org.junit.jupiter", module = "junit-jupter-engine")
+        exclude(group = "org.junit.jupiter", module = "junit-jupter-api")
+        exclude(group = "org.junit.platform", module = "junit-platform-engine")
+        exclude(group = "org.junit.platform", module = "junit-platform-commons")
+        exclude(group = "org.junit.jupiter", module = "junit-jupiter")
+    }
 
     implementation(libs.androidx.navigation.compose)
 
