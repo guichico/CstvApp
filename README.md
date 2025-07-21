@@ -10,6 +10,8 @@ The app module basically contains Application and Activity and the structure to 
 
 You can find tests of the two ViewModels in feature/matches/test
 
+<br />
+<br />
 <img width="345" height="261" alt="image" src="https://github.com/user-attachments/assets/ac2d37c8-aa4e-489f-a814-e7e2a26ea9b7" />
 <br />
 <br />
