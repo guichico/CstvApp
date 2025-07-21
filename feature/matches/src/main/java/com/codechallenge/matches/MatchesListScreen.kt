@@ -44,6 +44,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.codechallenge.designsystem.components.CirclePlaceholderAsyncImage
 import com.codechallenge.designsystem.theme.CardColor
 import com.codechallenge.designsystem.theme.CstvAppTheme
@@ -156,7 +157,10 @@ private fun MatchesList(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            items(matchesPager.itemCount) { index ->
+            items(
+                count = matchesPager.itemCount,
+                key = matchesPager.itemKey { it.id }
+            ) { index ->
                 matchesPager[index]?.let { match ->
                     MatchCard(
                         match = match,

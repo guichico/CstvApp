@@ -1,4 +1,4 @@
-package com.codechallenge.matches
+package com.codechallenge.matches.details
 
 import com.codechallenge.model.Player
 
