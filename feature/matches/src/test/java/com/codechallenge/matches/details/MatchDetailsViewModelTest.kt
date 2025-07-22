@@ -1,5 +1,7 @@
 package com.codechallenge.matches.details
 
+import com.codechallenge.matches.fakePlayers1
+import com.codechallenge.matches.fakePlayers2
 import com.codechallenge.matches.model.MatchUI
 import com.codechallenge.model.Team
 import com.codechallenge.test.AbstractTest
