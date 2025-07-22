@@ -9,6 +9,7 @@ Architecture - Multi-Module with Clean Architecture and MVVM.
 <br />
 The app module basically contains Application and Activity and the structure to receive more feature modules.
 <br />
+<br />
 You can find tests of the two ViewModels(MatchesListViewModelTest and MatchDetailsViewModelTest) in feature/matches/test and test of MatchesPagingSource in core/repository/test(MatchesPagingSourceTest)
 <br />
 <br />
