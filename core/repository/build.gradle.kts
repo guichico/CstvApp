@@ -58,6 +58,7 @@ dependencies {
 
     implementation(project(":core:model"))
     implementation(project(":core:network"))
+    implementation(project(":core:test"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -68,7 +69,11 @@ dependencies {
 
     implementation(libs.paging.runtime)
 
+    testImplementation(kotlin("test"))
     testImplementation(libs.junit)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.androidx.paging.testing)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

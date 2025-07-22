@@ -1,7 +1,7 @@
 import com.codechallenge.model.Match
 import com.codechallenge.repository.matches.MatchesRepository
 
-interface MatchesSourceType {
+internal interface MatchesSourceType {
 
     val runConcurrentWithNext: Boolean
     val isLastSource: Boolean
@@ -11,7 +11,7 @@ interface MatchesSourceType {
 
 }
 
-class RunningMatches(private val matchesRepository: MatchesRepository) : MatchesSourceType {
+internal class RunningMatches(private val matchesRepository: MatchesRepository) : MatchesSourceType {
 
     // TODO Spec doubt - If we can assume the running matches list size are never bigger than 10
     override val runConcurrentWithNext: Boolean = true
@@ -22,7 +22,7 @@ class RunningMatches(private val matchesRepository: MatchesRepository) : Matches
         matchesRepository.getRunningMatches(pageSize, pageNumber, latestDate)
 }
 
-class UpcomingMatches(private val matchesRepository: MatchesRepository) : MatchesSourceType {
+internal class UpcomingMatches(private val matchesRepository: MatchesRepository) : MatchesSourceType {
 
     override val runConcurrentWithNext: Boolean = false
     override val isLastSource: Boolean = false
@@ -32,7 +32,7 @@ class UpcomingMatches(private val matchesRepository: MatchesRepository) : Matche
         matchesRepository.getUpcomingMatches(pageSize, pageNumber, latestDate)
 }
 
-class PastMatches(private val matchesRepository: MatchesRepository) : MatchesSourceType {
+internal class PastMatches(private val matchesRepository: MatchesRepository) : MatchesSourceType {
 
     override val runConcurrentWithNext: Boolean = false
     override val isLastSource: Boolean = true
