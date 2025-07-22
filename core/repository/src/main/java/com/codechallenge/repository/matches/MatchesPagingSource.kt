@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 
-class MatchesPagingSource(
+internal class MatchesPagingSource(
     private val matchesRepository: MatchesRepository,
     private val latestDate: String
 ) : PagingSource<Int, Match>() {
