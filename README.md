@@ -1,6 +1,4 @@
 # CstvApp
-Repository for Fuze code challenge
-
 Architecture - Multi-Module with Clean Architecture and MVVM.
 
 <br />
