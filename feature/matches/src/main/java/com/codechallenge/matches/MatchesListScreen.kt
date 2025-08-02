@@ -203,7 +203,7 @@ private fun LazyItemScope.MatchCard(
                 color = CardColor,
                 shape = shape
             )
-            .clickable(onClick = { onMatchClick(match) })
+            .clickable(onClick = remember(match.id) { { onMatchClick(match) } })
             .animateItem()
     ) {
         Column(
